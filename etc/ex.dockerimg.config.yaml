@@ -1,6 +1,6 @@
 ---
 registry:
-  name: dockerhub
+  name: demo
   url: xxx
   user: {{DOCKERHUB_USER}}
   pass: {{DOCKERHUB_PASS}}
