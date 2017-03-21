@@ -33,6 +33,8 @@ func NewRegistry(config RegistryConfig, log *logging.Logger) (Registry, error) {
 		reg = &RHCCRegistry{}
 	case "dockerhub":
 		reg = &DockerHubRegistry{}
+	case "demo":
+		reg = &DemoRegistry{}
 	default:
 		panic("Unknown registry")
 	}

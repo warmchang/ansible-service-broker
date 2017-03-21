@@ -90,6 +90,9 @@ func CreateApp() App {
 		os.Exit(1)
 	}
 
+	app.log.Notice("Bootstrapping the broker automatically!")
+	app.broker.Bootstrap()
+
 	return app
 }
 
