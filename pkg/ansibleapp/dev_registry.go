@@ -10,7 +10,7 @@ import (
 	logging "github.com/op/go-logging"
 )
 
-const AppsPath = "/ansibleapps"
+//const AppsPath = "/apps.json"
 
 type DevRegistry struct {
 	config RegistryConfig
@@ -54,7 +54,8 @@ func (r *DevRegistry) LoadSpecs() ([]*Spec, error) {
 }
 
 func (r *DevRegistry) fullAppsPath() string {
-	return fmt.Sprintf("%s%s", r.config.Url, AppsPath)
+	//return fmt.Sprintf("%s%s", r.config.Url, AppsPath)
+	return r.config.Url
 }
 
 func loadSpecs(rawPayload []byte) []*Spec {

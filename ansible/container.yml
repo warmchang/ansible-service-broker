@@ -24,9 +24,11 @@ services:
     links:
       - etcd
     environment:
-      - "DOCKERHUB_USER={{ '{{dockerhub_user}}' }}"
-      - "DOCKERHUB_PASS={{ '{{dockerhub_pass}}' }}"
+      - "APPS_URL={{ '{{apps_url}}' }}"
       - "OPENSHIFT_TARGET={{ '{{openshift_target}}' }}"
       - "OPENSHIFT_USER={{ '{{openshift_user}}' }}"
       - "OPENSHIFT_PASS={{ '{{openshift_pass}}' }}"
 registries: {}
+
+#- "DOCKERHUB_USER={{ '{{dockerhub_user}}' }}"
+#- "DOCKERHUB_PASS={{ '{{dockerhub_pass}}' }}"

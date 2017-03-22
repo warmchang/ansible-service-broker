@@ -1,9 +1,9 @@
 ---
 registry:
-  name: demo
-  url: xxx
-  user: {{DOCKERHUB_USER}}
-  pass: {{DOCKERHUB_PASS}}
+  name: dev
+  url: {{APPS_URL}}
+  user: uuu
+  pass: ppp
   org: ansibleapp
 dao:
   etcd_host: etcd

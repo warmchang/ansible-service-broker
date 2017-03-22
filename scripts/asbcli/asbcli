@@ -548,14 +548,24 @@ def subcmd_up_parser(parser, subcmd):
         help=u'Cluster password that will be used to deploy the broker'
     )
     subcmd.add_argument(
-        '--dockerhub-user', action='store', dest='dockerhub_user',
-        help=u'Dockerhub user. Used to communicate with dockerhub registry.',
+        '--apps-url', action='store', dest='apps_url',
+        help=u'url for apps data',
         required=True
     )
     subcmd.add_argument(
-        '--dockerhub-pass', action='store', dest='dockerhub_pass',
-        help=u'Dockerhub pass. Used to communicate with dockerhub registry.',
+        '--project-name', action='store', dest='project_name',
+        help=u'url for apps data',
+        required=True
     )
+    # subcmd.add_argument(
+        # '--dockerhub-user', action='store', dest='dockerhub_user',
+        # help=u'Dockerhub user. Used to communicate with dockerhub registry.',
+        # required=True
+    # )
+    # subcmd.add_argument(
+        # '--dockerhub-pass', action='store', dest='dockerhub_pass',
+        # help=u'Dockerhub pass. Used to communicate with dockerhub registry.',
+    # )
 
 
 def cmdrun_connect(**kwargs):
@@ -566,13 +576,15 @@ def cmdrun_up(**kwargs):
     cluster = kwargs['cluster_address']
     openshift_user = kwargs['openshift_user']
     openshift_pass = kwargs['openshift_pass']
-    dockerhub_user = kwargs['dockerhub_user']
-    dockerhub_pass = kwargs['dockerhub_pass']
+    apps_url = kwargs['apps_url']
+    project_name = kwargs['project_name']
+    # dockerhub_user = kwargs['dockerhub_user']
+    # dockerhub_pass = kwargs['dockerhub_pass']
 
     if not openshift_pass:
         openshift_pass = getpass.getpass('Enter cluster password: ')
-    if not dockerhub_pass:
-        dockerhub_pass = getpass.getpass('Enter dockerhub password: ')
+    # if not dockerhub_pass:
+        # dockerhub_pass = getpass.getpass('Enter dockerhub password: ')
 
     docker_bin = spawn.find_executable('docker')
     if not docker_bin:
@@ -586,12 +598,15 @@ def cmdrun_up(**kwargs):
         '-e', 'OPENSHIFT_USER=%s' % openshift_user,
         '-e', 'OPENSHIFT_PASS=%s' % openshift_pass,
         BROKER_IMAGE, 'provision',
-        '-e', 'dockerhub_user=%s' % dockerhub_user,
-        '-e', 'dockerhub_pass=%s' % dockerhub_pass,
+        '-e', 'project_name=%s' % project_name,
+        '-e', 'playbook_debug=True',
+        '-e', 'apps_url=%s' % apps_url,
         '-e', 'openshift_target=%s' % cluster,
         '-e', 'openshift_user=%s' % openshift_user,
         '-e', 'openshift_pass=%s' % openshift_pass,
     ]
+        # '-e', 'dockerhub_user=%s' % dockerhub_user,
+        # '-e', 'dockerhub_pass=%s' % dockerhub_pass,
 
     brokerup_p = Popen(brokerup_cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
     output, err = brokerup_p.communicate()

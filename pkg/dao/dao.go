@@ -60,6 +60,11 @@ func etcdEndpoint(host string, port string) string {
 func (d *Dao) SetRaw(key string, val string) error {
 	d.log.Debug(fmt.Sprintf("Dao::SetRaw [ %s ] -> [ %s ]", key, val))
 	_, err := d.kapi.Set(context.Background(), key, val /*opts*/, nil)
+
+	if err != nil {
+		d.log.Error(fmt.Sprintf("Error happened setting etcd data: %s", err.Error()))
+	}
+
 	return err
 }
 

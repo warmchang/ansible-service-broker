@@ -1,7 +1,7 @@
 
 - oso_service:
     service_name: asb
-    project_name: ansible-service-broker
+    project_name: '{{project_name}}'
     labels:
       app: ansible-service-broker
       service: asb
@@ -19,7 +19,7 @@
 
 - oso_service:
     service_name: etcd
-    project_name: ansible-service-broker
+    project_name: '{{project_name}}'
     labels:
       app: ansible-service-broker
       service: etcd
@@ -36,7 +36,7 @@
   when: playbook_debug
 
 - oso_route:
-    project_name: ansible-service-broker
+    project_name: '{{project_name}}'
     service_port: port-1338
     labels:
       app: ansible-service-broker
@@ -51,7 +51,7 @@
   when: playbook_debug
 
 - oso_deployment:
-    project_name: ansible-service-broker
+    project_name: '{{project_name}}'
     labels:
       app: ansible-service-broker
       service: asb
@@ -60,14 +60,13 @@
     - securityContext: {}
       name: asb
       env:
-        DOCKERHUB_PASS: '{{dockerhub_pass}}'
-        DOCKERHUB_USER: '{{dockerhub_user}}'
+        APPS_URL: '{{apps_url}}'
         OPENSHIFT_PASS: '{{openshift_pass}}'
         OPENSHIFT_TARGET: '{{openshift_target}}'
         OPENSHIFT_USER: '{{openshift_user}}'
       args:
       - entrypoint.sh
-      image: docker.io/ansibleapp/ansible-service-broker-asb:latest
+      image: docker.io/eriknelson/ansible-service-broker-asb:latest
       ports:
       - 1338
     replace: true
@@ -77,7 +76,7 @@
   when: playbook_debug
 
 - oso_deployment:
-    project_name: ansible-service-broker
+    project_name: '{{project_name}}'
     labels:
       app: ansible-service-broker
       service: etcd
@@ -93,7 +92,7 @@
       - --data-dir=/data
       - --listen-client-urls=http://0.0.0.0:2379
       - --advertise-client-urls=http://0.0.0.0:2379
-      image: docker.io/ansibleapp/ansible-service-broker-etcd:latest
+      image: docker.io/eriknelson/ansible-service-broker-etcd:latest
       ports:
       - 2379
     replace: true
