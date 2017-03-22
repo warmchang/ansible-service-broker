@@ -1,0 +1,19 @@
+---
+registry:
+  name: dev
+  url: {{APPS_URL}}
+  user: user
+  pass: pass
+  org: ansibleapp
+dao:
+  etcd_host: localhost
+  etcd_port: 2379
+log:
+  logfile: /tmp/ansible-service-broker.log
+  stdout: true
+  level: debug
+  color: true
+openshift:
+  target: localhost:8443
+  user: admin
+  pass: admin

@@ -1,22 +1,30 @@
-FROM ansibleapp/ansibleapp-base
-MAINTAINER Ansible Apps <ansible-apps@redhat.com>
+FROM centos:7
 
-LABEL "com.redhat.ansibleapp.version"="0.1.0"
-LABEL "com.redhat.ansibleapp.spec"=\
-"aWQ6IDg5ZGFiNTZkLWE3MTItNDcyNS1hMDY1LWRjYjZjOGUxZGU4OApuYW1lOiBhbnNpYmxlYXBw\
-L2Fuc2libGUtc2VydmljZS1icm9rZXItYW5zaWJsZWFwcApkZXNjcmlwdGlvbjogQW5zaWJsZUFw\
-cCBPcGVuU2VydmljZUJyb2tlciBpbXBsZW1lbnRhdGlvbgpiaW5kYWJsZTogZmFsc2UKYXN5bmM6\
-ICJ1bnN1cHBvcnRlZCIKcGFyYW1ldGVyczoKICAtIG5hbWU6IGRvY2tlcmh1Yl91c2VyCiAgICBk\
-ZXNjcmlwdGlvbjogRG9ja2VySHViIFVzZXIKICAgIHR5cGU6IHN0cmluZwogIC0gbmFtZTogZG9j\
-a2VyaHViX3Bhc3MKICAgIGRlc2NyaXB0aW9uOiBEb2NrZXJIdWIgUGFzcwogICAgdHlwZTogc3Ry\
-aW5nCiAgLSBuYW1lOiBvcGVuc2hpZnRfdGFyZ2V0CiAgICBkZXNjcmlwdGlvbjogT3BlbnNoaWZ0\
-IFRhcmdldAogICAgdHlwZTogc3RyaW5nCiAgLSBuYW1lOiBvcGVuc2hpZnRfdXNlcgogICAgZGVz\
-Y3JpcHRpb246IE9wZW5zaGlmdCBVc2VyCiAgICB0eXBlOiBzdHJpbmcKICAtIG5hbWU6IG9wZW5z\
-aGlmdF9wYXNzCiAgICBkZXNjcmlwdGlvbjogT3BlbnNoaWZ0IFBhc3MKICAgIHR5cGU6IHN0cmlu\
-Zwo="
-ADD ansible /opt/ansible
-ADD ansibleapp /opt/ansibleapp
+RUN yum upgrade -y
+RUN yum install -y git btrfs-progs-devel device-mapper-devel make gcc-c++
 
-RUN useradd -u 1001 -r -g 0 -M -b /opt/ansibleapp -s /sbin/nologin -c "ansibleapp user" ansibleapp
-RUN chown -R 1001:0 /opt/{ansible,ansibleapp}
-USER 1001
+ENV GOPATH=/tmp/go GOBIN=/tmp/go/bin GOROOT=/usr/local/go
+RUN mkdir -p /tmp/go/src && mkdir -p /tmp/go/bin && \
+  mkdir -p /tmp/go/src/github.com/fusor && \
+  mkdir -p /usr/local/ansible-service-broker/bin && \
+  mkdir -p /etc/ansible-service-broker
+ENV PATH=/usr/local/go/bin:/usr/local/ansible-service-broker/bin:$PATH
+RUN curl -L "https://storage.googleapis.com/golang/go1.8.linux-amd64.tar.gz" \
+  > /usr/local/go.tar.gz && cd /usr/local && tar xf go.tar.gz
+RUN curl -L "https://github.com/Masterminds/glide/releases/download/v0.12.3/glide-v0.12.3-linux-amd64.tar.gz" \
+  > /tmp/glide.tar.gz && cd /tmp && tar xf glide.tar.gz --strip-components=1 && \
+  mv glide /usr/bin
+
+RUN git clone https://github.com/fusor/ansible-service-broker \
+  /tmp/go/src/github.com/fusor/ansible-service-broker && \
+  cd /tmp/go/src/github.com/fusor/ansible-service-broker && git checkout -b demo-broker origin/demo-broker
+RUN cd /tmp/go/src/github.com/fusor/ansible-service-broker && glide install
+RUN cd /tmp/go/src/github.com/fusor/ansible-service-broker && make build
+
+RUN cp $GOBIN/broker /usr/bin/asbd
+
+COPY docker/entrypoint.sh /usr/bin
+COPY docker/ansible-service-broker /usr/local/ansible-service-broker/bin
+COPY etc/ex.demo.config.yaml /etc/ansible-service-broker/config.yaml
+
+ENTRYPOINT ["/usr/bin/entrypoint.sh"]

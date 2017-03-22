@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+PATH=$PATH=/usr/local/ansible-service-broker/bin
 ASB_CONF=/etc/ansible-service-broker/config.yaml
 
 #if [[ -z "${DOCKERHUB_USER}" ]] || [[ -z "${DOCKERHUB_PASS}" ]]; then
@@ -11,28 +12,28 @@ ASB_CONF=/etc/ansible-service-broker/config.yaml
   #echo "Got DOCKERHUB credentials."
 #fi
 
-if [[ -z "${OPENSHIFT_TARGET}" ]] || [[ -z "${OPENSHIFT_USER}" ]] || [[ -z "${OPENSHIFT_PASS}" ]]; then
-  echo "ERROR: Missing target openshift cluster credentials."
-  echo "OPENSHIFT_TARGET - Ex: localhost:8443"
-  echo "OPENSHIFT_USER"
-  echo "OPENSHIFT_PASS"
-  exit 1
-else
-  echo "Got OPENSHIFT credentials."
-fi
+#if [[ -z "${OPENSHIFT_TARGET}" ]] || [[ -z "${OPENSHIFT_USER}" ]] || [[ -z "${OPENSHIFT_PASS}" ]]; then
+  #echo "ERROR: Missing target openshift cluster credentials."
+  #echo "OPENSHIFT_TARGET - Ex: localhost:8443"
+  #echo "OPENSHIFT_USER"
+  #echo "OPENSHIFT_PASS"
+  #exit 1
+#else
+  #echo "Got OPENSHIFT credentials."
+#fi
 
-id
+#id
 
-oc-login.sh
+#oc-login.sh
 
 echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 sed -i "s|{{APPS_URL}}|${APPS_URL}|" $ASB_CONF
 echo $APPS_URL
 #sed -i "s|{{DOCKERHUB_USER}}|${DOCKERHUB_USER}|" $ASB_CONF
 #sed -i "s|{{DOCKERHUB_PASS}}|${DOCKERHUB_PASS}|" $ASB_CONF
-sed -i "s|{{OPENSHIFT_TARGET}}|${OPENSHIFT_TARGET}|" $ASB_CONF
-sed -i "s|{{OPENSHIFT_USER}}|${OPENSHIFT_USER}|" $ASB_CONF
-sed -i "s|{{OPENSHIFT_PASS}}|${OPENSHIFT_PASS}|" $ASB_CONF
+#sed -i "s|{{OPENSHIFT_TARGET}}|${OPENSHIFT_TARGET}|" $ASB_CONF
+#sed -i "s|{{OPENSHIFT_USER}}|${OPENSHIFT_USER}|" $ASB_CONF
+#sed -i "s|{{OPENSHIFT_PASS}}|${OPENSHIFT_PASS}|" $ASB_CONF
 echo "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^"
 cat $ASB_CONF
 

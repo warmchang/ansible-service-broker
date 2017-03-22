@@ -10,6 +10,8 @@ import (
 	logging "github.com/op/go-logging"
 )
 
+var _SpecTable = make(map[string]*ansibleapp.Spec)
+
 type Config struct {
 	EtcdHost string `yaml:"etcd_host"`
 	EtcdPort string `yaml:"etcd_port"`
@@ -111,23 +113,26 @@ func (d *Dao) BatchGetRaw(dir string) (*[]string, error) {
 }
 
 func (d *Dao) GetSpec(id string) (*ansibleapp.Spec, error) {
-	raw, err := d.GetRaw(specKey(id))
-	if err != nil {
-		return nil, err
-	}
+	//raw, err := d.GetRaw(specKey(id))
+	//if err != nil {
+	//return nil, err
+	//}
 
-	spec := &ansibleapp.Spec{}
-	ansibleapp.LoadJSON(raw, spec)
-	return spec, nil
+	//spec := &ansibleapp.Spec{}
+	//ansibleapp.LoadJSON(raw, spec)
+	return _SpecTable[id], nil
 }
 
 func (d *Dao) SetSpec(id string, spec *ansibleapp.Spec) error {
-	payload, err := ansibleapp.DumpJSON(spec)
-	if err != nil {
-		return err
-	}
+	_SpecTable[id] = spec
+	return nil
 
-	return d.SetRaw(specKey(id), payload)
+	//payload, err := ansibleapp.DumpJSON(spec)
+	//if err != nil {
+	//return err
+	//}
+
+	//return d.SetRaw(specKey(id), payload)
 }
 
 func (d *Dao) BatchSetSpecs(specs ansibleapp.SpecManifest) error {
