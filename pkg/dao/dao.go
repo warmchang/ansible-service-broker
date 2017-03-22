@@ -148,18 +148,12 @@ func (d *Dao) BatchSetSpecs(specs ansibleapp.SpecManifest) error {
 }
 
 func (d *Dao) BatchGetSpecs(dir string) ([]*ansibleapp.Spec, error) {
-	var payloads *[]string
-	var err error
-	if payloads, err = d.BatchGetRaw(dir); err != nil {
-		return []*ansibleapp.Spec{}, err
-	}
-
-	specs := make([]*ansibleapp.Spec, len(*payloads))
-	for i, payload := range *payloads {
-		spec := &ansibleapp.Spec{}
-		ansibleapp.LoadJSON(payload, spec)
-		specs[i] = spec
-		d.log.Debug("Batch idx [ %d ] -> [ %s ]", i, spec.Id)
+	specs := make([]*ansibleapp.Spec, len(_SpecTable))
+	count := 0
+	for _, v := range _SpecTable {
+		specs[count] = v
+		d.log.Debug("SpecTable get [ %d ] -> [ %s ]", count, v.Id)
+		count = count + 1
 	}
 
 	return specs, nil
