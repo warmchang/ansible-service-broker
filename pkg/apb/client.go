@@ -198,6 +198,7 @@ func (c *Client) refreshLoginToken(clusterConfig ClusterConfig) error {
 	)
 
 	if err != nil {
+		c.log.Error(string(output))
 		return err
 	}
 
