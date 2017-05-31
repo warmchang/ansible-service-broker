@@ -149,7 +149,7 @@ func (c *Client) RunImage(
 	//"-e", fmt.Sprintf("OPENSHIFT_PASS=%s", clusterConfig.Password),
 	//spec.Name, action, "--extra-vars", string(params))
 
-	err = c.refreshLoginToken(clusterConfig)
+	err = c.RefreshLoginToken(clusterConfig)
 	if err != nil {
 		c.log.Error("Error occurred while refreshing login token! Aborting apb run.")
 		c.log.Error(err.Error())
@@ -185,7 +185,7 @@ func (c *Client) PullImage(imageName string) error {
 	return nil
 }
 
-func (c *Client) refreshLoginToken(clusterConfig ClusterConfig) error {
+func (c *Client) RefreshLoginToken(clusterConfig ClusterConfig) error {
 	c.log.Debug("Refreshing login token...")
 	c.log.Debug("target: [ %s ]", clusterConfig.Target)
 	c.log.Debug("user: [ %s ]", clusterConfig.User)
