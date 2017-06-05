@@ -1,0 +1,21 @@
+---
+registry:
+  name: dockerhub
+  url: http://localhost:1337
+  user: DOCKERHUB_USER
+  pass: DOCKERHUB_PASS
+  org: DOCKERHUB_ORG
+dao:
+  etcd_host: localhost
+  etcd_port: 2379
+log:
+  logfile: /tmp/ansible-service-broker.log
+  stdout: true
+  level: debug
+  color: true
+openshift:
+  target: localhost:8443
+  user: OPENSHIFT_USER
+  pass: OPENSHIFT_PASS
+broker:
+  enable_apb_bind: false

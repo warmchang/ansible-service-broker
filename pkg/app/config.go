@@ -7,6 +7,7 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"github.com/openshift/ansible-service-broker/pkg/apb"
+	"github.com/openshift/ansible-service-broker/pkg/broker"
 	"github.com/openshift/ansible-service-broker/pkg/dao"
 )
 
@@ -15,6 +16,7 @@ type Config struct {
 	Dao        dao.Config
 	Log        LogConfig
 	Openshift  apb.ClusterConfig
+	Broker     broker.BrokerConfig
 	ConfigFile string
 }
 

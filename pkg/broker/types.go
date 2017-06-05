@@ -120,3 +120,8 @@ type BootstrapResponse struct {
 	SpecCount  int `json:"spec_count"`
 	ImageCount int `json:"image_count"`
 }
+
+// BrokerConfig - The configuration for the broker
+type BrokerConfig struct {
+	EnableAPBBind bool `yaml:"enable_apb_bind"`
+}
