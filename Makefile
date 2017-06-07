@@ -5,7 +5,7 @@ BROKER_IMAGE     = $(REGISTRY)/$(PROJECT)/ansible-service-broker
 BUILD_DIR        = "${GOPATH}/src/github.com/openshift/ansible-service-broker/build"
 
 install: $(shell find cmd pkg)
-	go install -ldflags="-s -w" ./cmd/broker
+	go install ./cmd/broker
 
 ${GOPATH}/bin/mock-registry: $(shell find cmd/mock-registry)
 	go install ./cmd/mock-registry
