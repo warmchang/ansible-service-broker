@@ -21,12 +21,8 @@ var TotalTimeout = 900 // 15min
 // to be thrown out and redone asap.
 
 func extractCredentials(
-	output []byte, log *logging.Logger,
+	podname string, log *logging.Logger,
 ) (*ExtractedCredentials, error) {
-	log.Info("{%s}", string(output))
-
-	log.Debug("Calling getPodName")
-	podname, _ := getPodName(output, log)
 	log.Debug("Calling monitorOutput on " + podname)
 	credOut, _ := monitorOutput(podname)
 	log.Debug("oc log output: %s", string(credOut))

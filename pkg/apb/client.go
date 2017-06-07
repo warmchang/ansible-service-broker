@@ -7,11 +7,13 @@ import (
 
 	docker "github.com/fsouza/go-dockerclient"
 	logging "github.com/op/go-logging"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	restclient "k8s.io/client-go/rest"
 
 	"github.com/pborman/uuid"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/client-go/util/homedir"
+	"k8s.io/kubernetes/pkg/api/v1"
 	"k8s.io/kubernetes/pkg/client/clientset_generated/clientset"
 )
 
@@ -110,50 +112,17 @@ func (c *Client) RunImage(
 	clusterConfig ClusterConfig,
 	spec *Spec,
 	p *Parameters,
-) ([]byte, error) {
-	// HACK: We're expecting to run containers via go APIs rather than cli cmds
-	// TODO: Expecting parameters to be passed here in the future as well
-
+) (string, error) {
 	params, err := json.Marshal(p)
 	if err != nil {
-		return nil, err
+		return "", err
 	}
-
-	////////////////////////////////////////////////////////////////////////////////
-	// This needs a lot of cleanup. Broker was originally written to run
-	// inside a machine that also had a running dockerd available on /var/run/docker.sock
-	// If the broker is running inside of a container on ocp or k8s, this docker runtime
-	// is not available to the broker's environment in the same way. This requires
-	// the broker to run the apb metacontainer remotely...somehow.
-	// * options for docker are ugly:
-	// -> Nested docker? (bad)
-	// -> Remote docker (not a ton of options?) TCP socket?
-	// * We know we've got an available ocp cluster _somewhere_. Use oc run instead of
-	// docker? Requires an auth'd oc client available to the broker, but that can
-	// be baked into the broker's container runtime. This is done as a temporary soln.
-	//
-	// TODO: Need to figure out the right way to accomplish running metacontainers
-	// in remote runtimes longterm.
-	////////////////////////////////////////////////////////////////////////////////
-	//oc run ansible-service-broker-apb --env "OPENSHIFT_TARGET=10.1.2.2:8443"
-	//--env "OPENSHIFT_USER=admin" --env "OPENSHIFT_PASS=derp"
-	//--image=apb/ansible-service-broker-ansibleapp --restart=Never --
-	//provision -e "dockerhub_user=eriknelson" -e "dockerhub_pass=derp"
-	//-e "openshift_target=10.1.2.2:8443" -e "openshift_user=admin" -e "openshift_pass=derp"
-
-	// NOTE: Older approach when docker is easily available to the broker to run
-	// metacontainers, i.e., just running on
-	//return runCommand("docker", "run",
-	//"-e", fmt.Sprintf("OPENSHIFT_TARGET=%s", clusterConfig.Target),
-	//"-e", fmt.Sprintf("OPENSHIFT_USER=%s", clusterConfig.User),
-	//"-e", fmt.Sprintf("OPENSHIFT_PASS=%s", clusterConfig.Password),
-	//spec.Name, action, "--extra-vars", string(params))
 
 	err = c.refreshLoginToken(clusterConfig)
 	if err != nil {
 		c.log.Error("Error occurred while refreshing login token! Aborting apb run.")
 		c.log.Error(err.Error())
-		return nil, err
+		return "", err
 	}
 	c.log.Notice("Login token successfully refreshed.")
 
@@ -167,13 +136,42 @@ func (c *Client) RunImage(
 	c.log.Debug("action:[ %s ]", action)
 	c.log.Debug("params:[ %s ]", string(params))
 
-	return runCommand("oc", "run", fmt.Sprintf("aa-%s", uuid.New()),
-		"--env", fmt.Sprintf("OPENSHIFT_TARGET=%s", clusterConfig.Target),
-		"--env", fmt.Sprintf("OPENSHIFT_USER=%s", clusterConfig.User),
-		"--env", fmt.Sprintf("OPENSHIFT_PASS=%s", clusterConfig.Password),
-		fmt.Sprintf("--image-pull-policy=Always"),
-		fmt.Sprintf("--image=%s", spec.Image), "--restart=Never",
-		"--", action, "--extra-vars", string(params))
+	//TODO: This can be cleaned up much more. This Function does a lot more
+	// than RunImage originally did.
+	pod := &v1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: fmt.Sprintf("aa-%s", uuid.New()),
+		},
+		Spec: v1.PodSpec{
+			Containers: []v1.Container{
+				{
+					Name:  "apb",
+					Image: spec.Image,
+					Args: []string{
+						action,
+						"--extra-vars",
+						string(params),
+					},
+					Env: []v1.EnvVar{{
+						Name:  "OPENSHIFT_TARGET",
+						Value: clusterConfig.Target,
+					}, {
+						Name:  "OPENSHIFT_USER",
+						Value: clusterConfig.User,
+					}, {
+						Name:  "OPENSHIFT_PASS",
+						Value: clusterConfig.Password,
+					}},
+					ImagePullPolicy: v1.PullAlways,
+				},
+			},
+			RestartPolicy: v1.RestartPolicyNever,
+		},
+	}
+	c.log.Notice(fmt.Sprintf("Creating pod %q in namespace default", pod.Name))
+	_, err = c.ClusterClient.CoreV1().Pods("default").Create(pod)
+
+	return pod.Name, err
 }
 
 func (c *Client) PullImage(imageName string) error {
