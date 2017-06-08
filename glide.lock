@@ -1,5 +1,5 @@
-hash: 89d00acd05cddf68463ac64bdfb0511be82b906e2aa3e3855c7edd97dfce8884
-updated: 2017-05-18T07:10:44.527708169-04:00
+hash: e02373bd2031c037f8dc8d9248e9fe6334eb3a6e5ee915b86566dd8d0a9d5dc0
+updated: 2017-06-08T13:12:18.404161826-04:00
 imports:
 - name: github.com/Azure/go-ansiterm
   version: 70b2c90b260171e829f1ebd7c17f600c11858dbe
@@ -25,13 +25,12 @@ imports:
   - types
   - version
 - name: github.com/containers/storage
-  version: 5cbbc6bafb45bd7ef10486b673deb3b81bb3b787
+  version: dbcaa736c4ac87eac3b7e7ea82207f3b62458c25
   subpackages:
   - drivers
   - drivers/aufs
   - drivers/btrfs
   - drivers/devmapper
-  - drivers/overlay
   - drivers/overlay2
   - drivers/register
   - drivers/vfs
@@ -58,13 +57,15 @@ imports:
   - pkg/reexec
   - pkg/stringid
   - pkg/system
+  - pkg/truncindex
   - storage
   - storageversion
 - name: github.com/coreos/etcd
-  version: 43b75072bfaca5a7c35c718179defbcabd9a0886
+  version: 9d7ed0e63a4e9907c04396d0a9a7a01ba08d2852
   subpackages:
   - client
   - pkg/pathutil
+  - pkg/srv
   - pkg/types
   - version
 - name: github.com/coreos/go-oidc
@@ -164,9 +165,9 @@ imports:
 - name: github.com/gorilla/context
   version: 215affda49addc4c8ef7e2534915df2c8c35c6cd
 - name: github.com/gorilla/handlers
-  version: 3a5767ca75ece5f7f1440b1d16975247f8d8b221
+  version: a4043c62cc2329bacda331d33fc908ab11ef0ec3
 - name: github.com/gorilla/mux
-  version: 392c28fe23e1c45ddba891b0320b3b5df220beea
+  version: bcd8bc72b08df0f70df986b97f95590779502d31
 - name: github.com/hashicorp/go-cleanhttp
   version: ad28ea4487f05916463e2423a55166280e8254b5
 - name: github.com/howeyc/gopass
@@ -222,6 +223,11 @@ imports:
   - libcontainer/system
   - libcontainer/user
   - libcontainer/utils
+- name: github.com/opencontainers/selinux
+  version: 63bd19516561f1973f86c9f777b263ee1e0db140
+  subpackages:
+  - go-selinux
+  - go-selinux/label
 - name: github.com/pborman/uuid
   version: a97ce2ca70fa5a848076093f05e639a89ca34d06
 - name: github.com/pkg/errors
@@ -234,6 +240,10 @@ imports:
   version: 0208149b40d863d2c1a2f8fe5753096a9cf2cc8b
 - name: github.com/spf13/pflag
   version: 9ff6c6923cfffbcd502984b8e0c80539a94968b7
+- name: github.com/tchap/go-patricia
+  version: 666120de432aea38ab06bd5c818f04f4129882c9
+  subpackages:
+  - patricia
 - name: github.com/ugorji/go
   version: ded73eae5db7e7a0ef6f55aace87a2873c5d2b74
   subpackages:
